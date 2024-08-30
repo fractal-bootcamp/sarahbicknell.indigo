@@ -5,7 +5,10 @@ import CanvasNavbar from "./components/CanvasNavbar";
 
 export default function Home() {
   return (
-    <div className="flex min-h-screen flex-col items-center justify-between p-24 bg-blue-500">
+    <div className="flex min-h-screen flex-col items-center justify-between" 
+         style={{
+           background: 'repeating-linear-gradient(230deg, #4338ca, #4338ca 1px, #3730a3 1px, #3730a3 2px)'
+         }}>
       <AnimatedNavbar />
     </div>
   );

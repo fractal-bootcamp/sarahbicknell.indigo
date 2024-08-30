@@ -36,14 +36,14 @@
 .link {
   position: absolute;
   transform: translate(-50%, -50%);
-  color: white;
+  color: #fff9e6;
   text-decoration: none;
   font-weight: 600;    
-  font-size: 20px;
-  font-family: Arial, sans-serif;
+  font-size: 24px;
+  font-family: 'Courier New', Courier, monospace;
   opacity: 0;
   animation: fadeIn 0.5s ease-in-out forwards;
-  animation-delay: 2s;
+  animation-delay: 1s;
   pointer-events: auto;
   padding: 5px;
   border-radius: 3px;
@@ -51,8 +51,8 @@
 }
 
 .link:hover {
-  color: skyblue;
-  font-size: 24px;
+  color: #bfdbfe;
+  font-size: 30px;
 }
 
 @keyframes fadeIn {
@@ -66,7 +66,7 @@
 
 
 .arrow {
-  transition: transform 0.3s ease-in-out;
+  transition: transform .3s ease-in-out;
   /* transform-origin: 25% 25%; */
   /* // ok jfc . it needed to be 25% because of the way i set the viewbox to size make the container larger */
 }
@@ -77,11 +77,12 @@
 } */
 
 /* Specific transformations */
-.arrowE.arrowExtended { transform: scaleX(2); }
-.arrowW.arrowExtended { transform: scaleX(2); }
-.arrowSE.arrowExtended { transform: scale(2); }
-.arrowSW.arrowExtended { transform: scale(2); }
-.arrowS.arrowExtended {  transform: scaleY(2) scaleX(1.5);}
+.arrowE.arrowExtended { transform: scaleY(2) scaleX(4); }
+.arrowW.arrowExtended { transform: scaleY(2) scaleX(4); }
+.arrowSE.arrowExtended {   transform: rotate(-45deg) scaleX(2) scaleY(2.5) rotate(45deg);
+}
+.arrowSW.arrowExtended {   transform: rotate(-45deg) scaleX(2.5) scaleY(2) rotate(45deg);}
+.arrowS.arrowExtended {  transform: scaleY(3) scaleX(2);}
 .arrowN.arrowExtended { transform: scaleY(2); }
 .arrowNE.arrowExtended { transform: scale(2); }
 .arrowNW.arrowExtended { transform: scale(2); }
