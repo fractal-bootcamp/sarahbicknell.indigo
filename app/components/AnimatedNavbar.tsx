@@ -1,23 +1,37 @@
-'use client'
-
 import React, { useState, useEffect, useRef } from 'react';
 import styles from './AnimatedLogo.module.css';
 
 const AnimatedLogo = () => {
   const [isAnimationComplete, setIsAnimationComplete] = useState(false);
   const [hoveredArrow, setHoveredArrow] = useState<string | null>(null);
+  const isExtended = (arrowName: string) => hoveredArrow === arrowName;
+
+  const [svgSize, setSvgSize] = useState({ width: 600, height: 561.33331 });
   const svgRef = useRef<SVGSVGElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsAnimationComplete(true);
     }, 2000);
 
-    return () => clearTimeout(timer);
+    const handleResize = () => {
+      if (containerRef.current) {
+        const { width, height } = containerRef.current.getBoundingClientRect();
+        setSvgSize({ width, height });
+      }
+    };
+
+    window.addEventListener('resize', handleResize);
+    handleResize(); // Initial call
+
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener('resize', handleResize);
+    };
   }, []);
 
   const arrows = [
-
     { name: 'arrow-e', text: 'ABOUT', textX: 540, textY: -50 },
     { name: 'arrow-se', text: 'VIDEO', textX: 480, textY: 100 },
     { name: 'arrow-s', text: 'SHOP', textX: 305, textY: 150 },
@@ -29,11 +43,16 @@ const AnimatedLogo = () => {
   const centerX = 300;
   const centerY = 280.66665;
 
-  const adjustedArrows = arrows.map(arrow => ({
-    ...arrow,
-    adjustedX: centerX + (arrow.textX - centerX) * (scaleFactor + 0.1),
-    adjustedY: centerY + (arrow.textY - centerY) * (scaleFactor + 0.1)
-  }));
+  const adjustedArrows = arrows.map(arrow => {
+    const adjustedX = centerX + (arrow.textX - centerX) * (scaleFactor + 0.1);
+    const adjustedY = centerY + (arrow.textY - centerY) * (scaleFactor + 0.1);
+    
+    return {
+      ...arrow,
+      adjustedX: (adjustedX / 600) * svgSize.width,
+      adjustedY: (adjustedY / 561.33331) * svgSize.height,
+    };
+  });
 
   const extendArrow = (arrowName: string) => {
     const arrow = svgRef.current?.querySelector(`[name="${arrowName}"]`);
@@ -49,50 +68,78 @@ const AnimatedLogo = () => {
     }
   };
 
+  //functions to calculate transformation 
+  const getCustomTransform = (isExtended: boolean) => {
+    if (!isExtended) return '';
+    
+    // These values control the transformation. Adjust them to get the desired effect.
+    const scaleY = 3; // How much to extend vertically
+    const widthIncrease = 2; // How much wider the bottom should be (1 = 100% wider)
+
+    // SVG matrix: a, b, c, d, e, f
+    // a: horizontal scaling
+    // b: horizontal skewing
+    // c: vertical skewing
+    // d: vertical scaling
+    // e: horizontal translation
+    // f: vertical translation
+
+    
+    const a = 1 + widthIncrease; // Width at bottom
+    const b = 0; // No horizontal skew
+    const c = 0; // No vertical skew
+    const d = scaleY; // Vertical scaling
+    const e = 0 // Center the widened arrow
+    const f = 0; // No vertical translation
+    
+    return `matrix(${a}, ${b}, ${c}, ${d}, ${e}, ${f})`;
+  };
+
   return (
-    <div className={styles.container}>
+    <div ref={containerRef} className={styles.container}>
       <svg
         ref={svgRef}
         className={`${styles.logo} ${isAnimationComplete ? styles.shrunk : ''}`}
         version="1.1"
         id="svg1"
-        width="600px"
-        height="561.33331"
+        width="100%"
+        height="100%"
         viewBox="-300 0 1200 1122.66662"
+        preserveAspectRatio="xMidYMid meet"
         xmlns="http://www.w3.org/2000/svg"
       >
           <g id="layer1">
-    <g id="layer2" name="arrows">
+          <g id="layer2" name="arrows">
       <path
-        className={styles.arrowN}
+        className={`${styles.arrow} ${styles.arrowN}`}
         name="arrow-n"
         style={{fill: "indigo", stroke: "none", transformOrigin: "302.7454425px 154.56506px"}}
         d="M 294.62905,154.56506 H 295.32923 A 3.34987,3.34987 135 0 0 298.6791,151.21519 V 115.76863 A 3.3509107,3.3509107 39.205929 0 0 294.65507,112.48603 L 274.10385,116.70015 A 4.6520769,4.6520769 55.188959 0 1 269.22272,109.67999 L 307.56891,48.232289 A 3.8089733,3.8089733 179.80913 0 1 314.01818,48.210799 L 353.40353,110.39733 A 4.3001282,4.3001282 124.62017 0 1 348.90693,116.91061 L 328.11852,112.64785 A 3.7467795,3.7467795 140.79407 0 0 323.61911,116.31828 V 151.87872 A 2.7507117,2.7507117 45 0 0 326.36982,154.62943 H 327.66916"
       />
       <path
-        className={styles.arrow}
+        className={`${styles.arrow} ${styles.arrowE}`}
         name="arrow-e"
         style={{fill: "indigo", stroke: "none", transformOrigin: "413.96066px 257.649855px"}}
         d="m 413.96066,274.10893 v -0.70018 a 3.34987,3.34987 0 0 1 3.34987,-3.34987 h 35.44656 a 3.3509107,3.3509107 0 0 1 3.2826,4.02403 l -4.21412,20.55122 a 4.6520769,4.6520769 0 0 0 7.02014,4.88113 l 61.4477,-38.34619 a 3.8089733,3.8089733 0 0 0 0.0215,-6.44927 l -62.18653,-39.38534 a 4.3001282,4.3001282 0 0 0 -6.51329,4.4966 l 4.26276,20.78841 a 3.7467795,3.7467795 0 0 1 -3.6704,4.4994 h -35.56044 a 2.7507117,2.7507117 0 0 1 -2.75071,-2.75071 v -1.29933"
 
       />
       <path
-        className={styles.arrow}
+        className={`${styles.arrow} ${styles.arrowNE}`}
         name="arrow-ne"
         style={{fill: "indigo", stroke: "none"}}
         d="M 395.58622,196.55114 L 395.09111,196.05604 A 3.34987,3.34987 0 0 1 395.09111,191.3186 L 420.15562,166.2541 A 3.3509107,3.3509107 0 0 1 425.32218,166.77837 L 436.87426,184.29011 A 4.6520769,4.6520769 0 0 0 445.28973,182.7776 L 461.62496,112.21267 A 3.8089733,3.8089733 0 0 0 457.07984,107.63714 L 385.2578,123.76 A 4.3001282,4.3001282 0 0 0 383.83179,131.54521 L 401.54564,143.2306 A 3.7467795,3.7467795 0 0 1 402.13183,148.99699 L 377.98681,174.14199 A 2.7507117,2.7507117 0 0 1 374.09672,174.14199 L 373.17796,173.22323"
       />
       <path
-        className={styles.arrow}
+        className={`${styles.arrow} ${styles.arrowSE}`}
         name="arrow-se"
         style={{fill: "indigo", stroke: "none", transformOrigin: '382.937525px 330.42004px'}}
         d="M 372.19207,342.12417 L 372.68717,341.62907 A 3.34987,3.34987 0 0 1 377.42461,341.62907 L 402.48912,366.69358 A 3.3509107,3.3509107 0 0 1 401.96535,371.86014 L 384.45361,383.41222 A 4.6520769,4.6520769 0 0 0 385.96612,391.82769 L 455.53105,408.16292 A 3.8089733,3.8089733 0 0 0 460.10658,403.61779 L 444.98372,331.79575 A 4.3001282,4.3001282 0 0 0 437.19852,330.36974 L 425.51313,348.0836 A 3.7467795,3.7467795 0 0 1 419.74674,348.66978 L 394.60174,323.52476 A 2.7507117,2.7507117 0 0 1 394.60174,319.63467 L 393.68298,318.71591"
       />
       
       <path
-        className={` ${styles.arrow}`}
+        className={`${styles.arrow} ${styles.arrowS}`}
         name="arrow-s"
-        style={{fill: "indigo", stroke: "none", transformOrigin: "310.861835px 360.73465px"}}
+        style={{fill: "indigo", stroke: "none", transformOrigin: "310.861835px 360.73465px", transform: isExtended('arrow-s') ? getCustomTransform(true) : ''}}
         d="M 294.84178,360.73465 H 295.54196 A 3.34987,3.34987 0 0 1 298.89183,364.08452 V 399.53108 A 3.3509107,3.3509107 0 0 1 294.8678,402.81368 L 274.31658,398.59955 A 4.6520769,4.6520769 0 0 0 269.43545,405.61971 L 307.78164,467.06741 A 3.8089733,3.8089733 0 0 0 314.23091,467.04591 L 353.61626,404.85938 A 4.3001282,4.3001282 0 0 0 348.11966,398.34611 L 327.33125,402.60887 A 3.7467795,3.7467795 0 0 1 322.83184,398.93844 V 363.378 A 2.7507117,2.7507117 0 0 1 325.58255,360.62729 H 326.88189"
       />
       {/* <circle
@@ -108,24 +155,23 @@ const AnimatedLogo = () => {
         fill="red"
       /> */}
       <path
-        className={styles.arrow}
+        className={`${styles.arrow} ${styles.arrowSW}`}
         name="arrow-sw"
         style={{fill: "indigo", stroke: "none", transformOrigin: "238.344935px 330.590105px"}}
         d="M 226.6408,318.92624 L 227.13591,319.42134 A 3.34987,3.34987 0 0 1 227.13591,324.15878 L 202.0714,349.22329 A 3.3509107,3.3509107 0 0 1 196.90484,348.69902 L 185.35277,331.18728 A 4.6520769,4.6520769 0 0 0 176.9373,332.69979 L 160.60207,403.26472 A 3.8089733,3.8089733 0 0 0 165.14719,407.84025 L 237.96923,391.71721 A 4.3001282,4.3001282 0 0 0 239.39524,383.93201 L 221.68139,372.24662 A 3.7467795,3.7467795 0 0 1 221.0952,366.48023 L 245.24022,341.33521 A 2.7507117,2.7507117 0 0 1 249.13031,341.33521 L 250.04907,342.25397"
       />
       <path
-        className={styles.arrow}
+        className={`${styles.arrow} ${styles.arrowW}`}
         name="arrow-w"
         style={{fill: "indigo", stroke: "none", transformOrigin: "207.77704px 257.649855px"}}
         d="m 208.08317,241.3242 v 0.70018 a 3.34987,3.34987 0 0 1 -3.34988,3.34987 h -35.44655 a 3.3509107,3.3509107 0 0 1 -3.28261,-4.02403 l 4.21413,-20.55122 a 4.6520769,4.6520769 0 0 0 -7.02015,-4.88113 l -61.44769,38.34619 a 3.8089733,3.8089733 0 0 0 -0.0215,6.44928 l 62.18652,39.38534 a 4.3001282,4.3001282 0 0 0 6.51329,-4.49661 l -4.26276,-20.78841 a 3.7467795,3.7467795 0 0 1 3.6704,-4.4994 h 35.56043 a 2.7507117,2.7507117 0 0 1 2.75072,2.75072 l 1e-5,1.29931"
       />
       <path
-        className={styles.arrow}
+        className={`${styles.arrow} ${styles.arrowNW}`}
         name="arrow-nw"
         style={{fill: "indigo", stroke: "none"}}
         d="m 249.78477,173.18485 -0.4951,0.49511 a 3.34987,3.34987 0 0 1 -4.73744,-1e-5 l -25.0645,-25.0645 a 3.3509107,3.3509107 0 0 1 0.52427,-5.16657 l 17.51175,-11.55207 a 4.6520769,4.6520769 0 0 0 -1.51252,-8.41547 L 165.4463,107.14611 a 3.8089733,3.8089733 0 0 0 -4.57553,4.54513 l 16.12288,71.82215 a 4.3001282,4.3001282 0 0 0 7.78517,1.42601 l 11.6854,-17.71385 a 3.7467795,3.7467795 0 0 1 5.77692,-0.58619 l 25.14502,25.14502 a 2.7507117,2.7507117 0 0 1 0,3.8901 l -0.91875,0.91876"
       />
-    </g>
     <path
       name="octagon"
       id="path1"
@@ -151,6 +197,7 @@ const AnimatedLogo = () => {
       />
     </g>
   </g>
+  </g>
   </svg>
       {isAnimationComplete && (
         <div className={styles.links}>
@@ -160,8 +207,8 @@ const AnimatedLogo = () => {
               href={`#${arrow.text.toLowerCase()}`}
               className={styles.link}
               style={{
-                left: `${(arrow.adjustedX / 600) * 100}%`,
-                top: `${(arrow.adjustedY / 561.33331) * 100}%`,
+                left: `${(arrow.adjustedX / svgSize.width) * 100}%`,
+                top: `${(arrow.adjustedY / svgSize.height) * 100}%`,
               }}
               onMouseEnter={() => {
                 setHoveredArrow(arrow.name);
@@ -180,6 +227,5 @@ const AnimatedLogo = () => {
     </div>
   );
 };
-
 
 export default AnimatedLogo;

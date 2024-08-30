@@ -1,6 +1,7 @@
 'use client';
 import Image from "next/image";
 import AnimatedNavbar from "./components/AnimatedNavbar";
+import CanvasNavbar from "./components/CanvasNavbar";
 
 export default function Home() {
   return (
