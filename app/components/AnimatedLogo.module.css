@@ -16,8 +16,8 @@
 }
 
 .logo.shrunk {
-  width: 250px;
-  height: 250px;
+  width: 500px;
+  height: 500px;
   position: absolute;
   top: 20px;
 }
@@ -44,6 +44,7 @@
   transform: translate(-50%, -50%);
   color: white;
   text-decoration: none;
+  font-weight: 600;    
   font-size: 14px;
   font-family: Arial, sans-serif;
   opacity: 0;
@@ -57,20 +58,31 @@
 
 .arrow {
   transition: transform 0.3s ease-in-out;
-  transform-origin: center;
+  /* transform-origin: 25% 25%; */
+  /* // ok jfc . it needed to be 25% because of the way i set the viewbox to size make the container larger */
 }
 
+
 .arrowExtended {
-  transform: scale(4);
+  transform: scale(1.75);
 }
 
 /* transform origins */
-.arrow-e, .arrow-w { transform-origin: center left; }
-.arrow-se, .arrow-sw { transform-origin: top left; }
-.arrow-s { transform-origin: top center; }
+.arrow-e { transform-origin: 50% 50%; }
+.arrow-w { transform-origin: 0% 50%; }
+.arrow-se { transform-origin: 100% 0%; }
+.arrow-sw { transform-origin: 0% 0%; }
+.arrow-s { transform-origin: 26% 32s%; }
+.arrow-n { transform-origin: 50% 0%; }
+.arrow-ne { transform-origin: 100% 0%; }
+.arrow-nw { transform-origin: 0% 0%; }
 
-.arrow-e.arrowExtended { transform: scaleX(5); }
-.arrow-se.arrowExtended { transform: scale(2); }
-.arrow-s.arrowExtended { transform: scaleY(2); }
-.arrow-sw.arrowExtended { transform: scale(2); }
+/* Specific transformations */
+/* .arrow-e.arrowExtended { transform: scaleX(2); }
 .arrow-w.arrowExtended { transform: scaleX(2); }
+.arrow-se.arrowExtended { transform: scale(2); }
+.arrow-sw.arrowExtended { transform: scale(2); }
+.arrow-s.arrowExtended { transform: scaleY(2); }
+.arrow-n.arrowExtended { transform: scaleY(2); }
+.arrow-ne.arrowExtended { transform: scale(2); }
+.arrow-nw.arrowExtended { transform: scale(2); } */
